@@ -1,1 +1,40 @@
-Nothing needs to be added to .gitignore since only a single HTML file was added without any build artifacts, dependencies, or temporary files.
+```
+# Build artifacts
+Build/
+Builds/
+Library/
+Logs/
+Temp/
+Obj/
+
+# Unity-specific files
+*.unitypackage
+*.meta
+*.pidb
+*.userprefs
+*.sln.meta
+*.csproj.meta
+*.user
+*.user.meta
+*.lock
+*.tmp
+
+# Dependencies
+Packages/
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+```
