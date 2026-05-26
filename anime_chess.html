@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аниме Шахматы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            border: 4px solid #333;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .square.light {
+            background-color: #f0d9b5;
+        }
+
+        .square.dark {
+            background-color: #b58863;
+        }
+
+        .square:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .square.selected {
+            background-color: #7fff00 !important;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .square.valid-move {
+            position: relative;
+        }
+
+        .square.valid-move::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(0, 255, 0, 0.5);
+            border-radius: 50%;
+        }
+
+        .piece {
+            font-size: 45px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease;
+            animation: pieceAppear 0.5s ease-out;
+        }
+
+        @keyframes pieceAppear {
+            from {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .piece.white {
+            filter: drop-shadow(0 0 5px #fff);
+        }
+
+        .piece.black {
+            filter: drop-shadow(0 0 5px #000);
+        }
+
+        .info-panel {
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .turn-indicator {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .captured-pieces {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            min-height: 50px;
+            flex-wrap: wrap;
+        }
+
+        .captured-piece {
+            font-size: 25px;
+            animation: captureEffect 0.5s ease-out;
+        }
+
+        @keyframes captureEffect {
+            from {
+                transform: scale(1.5) rotate(360deg);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .character-name {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .square:hover .character-name {
+            opacity: 1;
+        }
+
+        .move-history {
+            max-height: 100px;
+            overflow-y: auto;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎌 Аниме Шахматы 🎌</h1>
+    
+    <div class="game-container">
+        <div class="board" id="board"></div>
+        
+        <div class="info-panel">
+            <div class="turn-indicator" id="turnIndicator">Ход белых</div>
+            
+            <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+                <div>
+                    <h3>Пленённые фигуры (Белые):</h3>
+                    <div class="captured-pieces" id="capturedWhite"></div>
+                </div>
+                <div>
+                    <h3>Пленённые фигуры (Чёрные):</h3>
+                    <div class="captured-pieces" id="capturedBlack"></div>
+                </div>
+            </div>
+            
+            <div class="move-history" id="moveHistory">
+                <strong>История ходов:</strong><br>
+            </div>
+            
+            <button class="reset-btn" onclick="resetGame()">Начать заново</button>
+        </div>
+    </div>
+
+    <script>
+        // Аниме персонажи для шахматных фигур
+        const animePieces = {
+            white: {
+                king: '👸',      // Принцесса
+                queen: '🧚‍♀️',   // Фея
+                rook: '🏰',      // Замок
+                bishop: '🔮',    // Маг
+                knight: '🦄',    // Единорог
+                pawn: '🌸'       // Цветок
+            },
+            black: {
+                king: '🤴',      // Принц
+                queen: '👿',     // Демон
+                rook: '🏯',      // Японский замок
+                bishop: '🔥',    // Огонь
+                knight: '🐉',    // Дракон
+                pawn: '🌑'       // Тёмная луна
+            }
+        };
+
+        // Названия персонажей
+        const characterNames = {
+            white: {
+                king: 'Принцесса',
+                queen: 'Фея',
+                rook: 'Замок',
+                bishop: 'Маг',
+                knight: 'Единорог',
+                pawn: 'Цветок'
+            },
+            black: {
+                king: 'Принц',
+                queen: 'Демон',
+                rook: 'Замок',
+                bishop: 'Огонь',
+                knight: 'Дракон',
+                pawn: 'Луна'
+            }
+        };
+
+        let board = [];
+        let selectedSquare = null;
+        let currentTurn = 'white';
+        let moveHistory = [];
+        let capturedWhite = [];
+        let capturedBlack = [];
+
+        function initializeBoard() {
+            board = [
+                ['black_rook', 'black_knight', 'black_bishop', 'black_queen', 'black_king', 'black_bishop', 'black_knight', 'black_rook'],
+                ['black_pawn', 'black_pawn', 'black_pawn', 'black_pawn', 'black_pawn', 'black_pawn', 'black_pawn', 'black_pawn'],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['', '', '', '', '', '', '', ''],
+                ['white_pawn', 'white_pawn', 'white_pawn', 'white_pawn', 'white_pawn', 'white_pawn', 'white_pawn', 'white_pawn'],
+                ['white_rook', 'white_knight', 'white_bishop', 'white_queen', 'white_king', 'white_bishop', 'white_knight', 'white_rook']
+            ];
+        }
+
+        function createBoard() {
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    
+                    if (board[row][col]) {
+                        const [color, type] = board[row][col].split('_');
+                        const piece = document.createElement('span');
+                        piece.className = `piece ${color}`;
+                        piece.textContent = animePieces[color][type];
+                        
+                        const name = document.createElement('div');
+                        name.className = 'character-name';
+                        name.textContent = characterNames[color][type];
+                        
+                        square.appendChild(piece);
+                        square.appendChild(name);
+                    }
+                    
+                    square.addEventListener('click', () => handleSquareClick(row, col));
+                    boardElement.appendChild(square);
+                }
+            }
+        }
+
+        function handleSquareClick(row, col) {
+            const clickedPiece = board[row][col];
+            
+            if (selectedSquare) {
+                const [selectedRow, selectedCol] = selectedSquare;
+                const selectedPiece = board[selectedRow][selectedCol];
+                
+                if (clickedPiece && clickedPiece.startsWith(currentTurn)) {
+                    // Выбрать другую свою фигуру
+                    selectedSquare = [row, col];
+                    highlightSelected(row, col);
+                } else if (isValidMove(selectedRow, selectedCol, row, col)) {
+                    // Сделать ход
+                    movePiece(selectedRow, selectedCol, row, col);
+                    selectedSquare = null;
+                    clearHighlights();
+                } else {
+                    // Отменить выделение
+                    selectedSquare = null;
+                    clearHighlights();
+                }
+            } else if (clickedPiece && clickedPiece.startsWith(currentTurn)) {
+                // Выбрать фигуру
+                selectedSquare = [row, col];
+                highlightSelected(row, col);
+            }
+        }
+
+        function isValidMove(fromRow, fromCol, toRow, toCol) {
+            const piece = board[fromRow][fromCol];
+            const target = board[toRow][toCol];
+            const [color, type] = piece.split('_');
+            
+            // Нельзя ходить на клетку со своей фигурой
+            if (target && target.startsWith(color)) {
+                return false;
+            }
+            
+            const dRow = toRow - fromRow;
+            const dCol = toCol - fromCol;
+            
+            switch (type) {
+                case 'pawn':
+                    const direction = color === 'white' ? -1 : 1;
+                    const startRow = color === 'white' ? 6 : 1;
+                    
+                    // Обычный ход вперёд
+                    if (dCol === 0 && dRow === direction && !target) {
+                        return true;
+                    }
+                    
+                    // Первый ход на две клетки
+                    if (dCol === 0 && dRow === 2 * direction && fromRow === startRow && !target && !board[fromRow + direction][fromCol]) {
+                        return true;
+                    }
+                    
+                    // Взятие
+                    if (Math.abs(dCol) === 1 && dRow === direction && target) {
+                        return true;
+                    }
+                    
+                    return false;
+                    
+                case 'rook':
+                    if (dRow !== 0 && dCol !== 0) return false;
+                    return isPathClear(fromRow, fromCol, toRow, toCol);
+                    
+                case 'knight':
+                    return (Math.abs(dRow) === 2 && Math.abs(dCol) === 1) || 
+                           (Math.abs(dRow) === 1 && Math.abs(dCol) === 2);
+                    
+                case 'bishop':
+                    if (Math.abs(dRow) !== Math.abs(dCol)) return false;
+                    return isPathClear(fromRow, fromCol, toRow, toCol);
+                    
+                case 'queen':
+                    if (dRow !== 0 && dCol !== 0 && Math.abs(dRow) !== Math.abs(dCol)) return false;
+                    return isPathClear(fromRow, fromCol, toRow, toCol);
+                    
+                case 'king':
+                    return Math.abs(dRow) <= 1 && Math.abs(dCol) <= 1;
+                    
+                default:
+                    return false;
+            }
+        }
+
+        function isPathClear(fromRow, fromCol, toRow, toCol) {
+            const dRow = Math.sign(toRow - fromRow);
+            const dCol = Math.sign(toCol - fromCol);
+            
+            let currentRow = fromRow + dRow;
+            let currentCol = fromCol + dCol;
+            
+            while (currentRow !== toRow || currentCol !== toCol) {
+                if (board[currentRow][currentCol]) {
+                    return false;
+                }
+                currentRow += dRow;
+                currentCol += dCol;
+            }
+            
+            return true;
+        }
+
+        function movePiece(fromRow, fromCol, toRow, toCol) {
+            const piece = board[fromRow][fromCol];
+            const target = board[toRow][toCol];
+            const [color, type] = piece.split('_');
+            
+            // Запись взятой фигуры
+            if (target) {
+                const [targetColor, targetType] = target.split('_');
+                if (targetColor === 'white') {
+                    capturedWhite.push(targetType);
+                } else {
+                    capturedBlack.push(targetType);
+                }
+                updateCapturedDisplay();
+            }
+            
+            // Перемещение фигуры
+            board[toRow][toCol] = piece;
+            board[fromRow][fromCol] = '';
+            
+            // Превращение пешки
+            if (type === 'pawn' && (toRow === 0 || toRow === 7)) {
+                board[toRow][toCol] = `${color}_queen`;
+            }
+            
+            // Запись хода в историю
+            const notation = `${characterNames[color][type]} (${fromCol+1},${8-fromRow}) → (${toCol+1},${8-toRow})`;
+            moveHistory.push(notation);
+            updateMoveHistory();
+            
+            // Смена хода
+            currentTurn = currentTurn === 'white' ? 'black' : 'white';
+            updateTurnIndicator();
+            
+            // Обновление доски
+            createBoard();
+        }
+
+        function highlightSelected(row, col) {
+            clearHighlights();
+            const squares = document.querySelectorAll('.square');
+            const index = row * 8 + col;
+            squares[index].classList.add('selected');
+            
+            // Показать возможные ходы
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if (isValidMove(row, col, r, c)) {
+                        const idx = r * 8 + c;
+                        squares[idx].classList.add('valid-move');
+                    }
+                }
+            }
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('.square').forEach(square => {
+                square.classList.remove('selected', 'valid-move');
+            });
+        }
+
+        function updateTurnIndicator() {
+            const indicator = document.getElementById('turnIndicator');
+            indicator.textContent = currentTurn === 'white' ? 'Ход белых (светлые)' : 'Ход чёрных (тёмные)';
+            indicator.style.background = currentTurn === 'white' 
+                ? 'linear-gradient(45deg, #ff9a9e, #fad0c4)' 
+                : 'linear-gradient(45deg, #667eea, #764ba2)';
+        }
+
+        function updateCapturedDisplay() {
+            const whiteContainer = document.getElementById('capturedWhite');
+            const blackContainer = document.getElementById('capturedBlack');
+            
+            whiteContainer.innerHTML = capturedWhite.map(type => 
+                `<span class="captured-piece">${animePieces.white[type]}</span>`
+            ).join('');
+            
+            blackContainer.innerHTML = capturedBlack.map(type => 
+                `<span class="captured-piece">${animePieces.black[type]}</span>`
+            ).join('');
+        }
+
+        function updateMoveHistory() {
+            const historyElement = document.getElementById('moveHistory');
+            historyElement.innerHTML = '<strong>История ходов:</strong><br>' + 
+                moveHistory.map((move, i) => `${i + 1}. ${move}`).join('<br>');
+            historyElement.scrollTop = historyElement.scrollHeight;
+        }
+
+        function resetGame() {
+            initializeBoard();
+            selectedSquare = null;
+            currentTurn = 'white';
+            moveHistory = [];
+            capturedWhite = [];
+            capturedBlack = [];
+            createBoard();
+            updateTurnIndicator();
+            updateCapturedDisplay();
+            updateMoveHistory();
+        }
+
+        // Инициализация игры
+        initializeBoard();
+        createBoard();
+        updateTurnIndicator();
+    </script>
+</body>
+</html>
