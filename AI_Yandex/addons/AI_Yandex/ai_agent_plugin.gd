@@ -191,10 +191,13 @@ func _create_main_panel() -> void:
 	var dock_control = editor_interface.get_base_control()
 	
 	# Находим контейнер для доков (справа)
-	var right_dock = dock_control.find_child("RightDock", true, false)
-	if not right_dock:
-		# Пробуем альтернативные имена
-		right_dock = dock_control.find_child("DockContainer", true, false)
+	var right_dock: Control = null
+	
+	# Проходим по всем дочерним элементам в поисках правого дока
+	for child in dock_control.get_children():
+		if "Right" in child.name or "Dock" in child.name or "right" in child.name.to_lower():
+			right_dock = child as Control
+			break
 	
 	if right_dock:
 		dock_container = right_dock
@@ -208,7 +211,21 @@ func _create_main_panel() -> void:
 	main_panel.visible = is_panel_visible
 
 func _add_toolbar_button() -> void:
-	var toolbar = editor_interface.get_base_control().get_node("MenuContainer/ToolbarBox")
+	var base_control = editor_interface.get_base_control()
+	var toolbar: Control = null
+	
+	# Ищем тулбар разными способами
+	if base_control.has_node("MenuContainer/ToolbarBox"):
+		toolbar = base_control.get_node("MenuContainer/ToolbarBox")
+	elif base_control.has_node("ToolbarBox"):
+		toolbar = base_control.get_node("ToolbarBox")
+	else:
+		# Проходим по всем дочерним элементам
+		for child in base_control.get_children():
+			if "Toolbar" in child.name or "toolbar" in child.name.to_lower():
+				toolbar = child
+				break
+	
 	if toolbar:
 		var button = Button.new()
 		button.name = "AIAgentButton"
@@ -218,7 +235,20 @@ func _add_toolbar_button() -> void:
 		toolbar.add_child(button)
 
 func _remove_toolbar_button() -> void:
-	var toolbar = editor_interface.get_base_control().get_node("MenuContainer/ToolbarBox")
+	var base_control = editor_interface.get_base_control()
+	var toolbar: Control = null
+	
+	# Ищем тулбар разными способами (аналогично _add_toolbar_button)
+	if base_control.has_node("MenuContainer/ToolbarBox"):
+		toolbar = base_control.get_node("MenuContainer/ToolbarBox")
+	elif base_control.has_node("ToolbarBox"):
+		toolbar = base_control.get_node("ToolbarBox")
+	else:
+		for child in base_control.get_children():
+			if "Toolbar" in child.name or "toolbar" in child.name.to_lower():
+				toolbar = child
+				break
+	
 	if toolbar and toolbar.has_node("AIAgentButton"):
 		toolbar.get_node("AIAgentButton").queue_free()
 
@@ -271,7 +301,7 @@ func _on_get_token_pressed() -> void:
 		var json = JSON.parse_string(response)
 		if json and json.has("token"):
 			yandex_token = json["token"]
-			var token_edit = main_panel.get_node("VBoxContainer/TokenEdit") as LineEdit
+			var token_edit = main_panel.get_node_or_null("VBoxContainer/TokenEdit") as LineEdit
 			if token_edit:
 				token_edit.text = yandex_token
 			_save_settings()
@@ -324,7 +354,7 @@ func _show_status(text: String, color: Color) -> void:
 func _start_autonomous_mode() -> void:
 	if not is_connected:
 		_show_status("⚠️ Сначала подключитесь к серверу", Color.YELLOW)
-		var auto_btn = main_panel.get_node("VBoxContainer/AutoButton") as CheckButton
+		var auto_btn = main_panel.get_node_or_null("VBoxContainer/AutoButton") as CheckButton
 		if auto_btn:
 			auto_btn.button_pressed = false
 		return
@@ -351,26 +381,27 @@ func _load_settings() -> void:
 		yandex_token = config.get_value("settings", "yandex_token", "")
 		auto_work = config.get_value("settings", "auto_work", false)
 		
-		# Обновляем UI
-		var url_edit = main_panel.get_node("VBoxContainer/URLEdit") as LineEdit
-		if url_edit:
-			url_edit.text = server_url
-		
-		var login_edit = main_panel.get_node("VBoxContainer/LoginEdit") as LineEdit
-		if login_edit:
-			login_edit.text = yandex_login
-		
-		var password_edit = main_panel.get_node("VBoxContainer/PasswordEdit") as LineEdit
-		if password_edit:
-			password_edit.text = yandex_password
-		
-		var token_edit = main_panel.get_node("VBoxContainer/TokenEdit") as LineEdit
-		if token_edit:
-			token_edit.text = yandex_token
-		
-		var auto_btn = main_panel.get_node("VBoxContainer/AutoButton") as CheckButton
-		if auto_btn:
-			auto_btn.button_pressed = auto_work
+		# Обновляем UI если панель уже создана
+		if main_panel and is_instance_valid(main_panel):
+			var url_edit = main_panel.get_node_or_null("VBoxContainer/URLEdit") as LineEdit
+			if url_edit:
+				url_edit.text = server_url
+			
+			var login_edit = main_panel.get_node_or_null("VBoxContainer/LoginEdit") as LineEdit
+			if login_edit:
+				login_edit.text = yandex_login
+			
+			var password_edit = main_panel.get_node_or_null("VBoxContainer/PasswordEdit") as LineEdit
+			if password_edit:
+				password_edit.text = yandex_password
+			
+			var token_edit = main_panel.get_node_or_null("VBoxContainer/TokenEdit") as LineEdit
+			if token_edit:
+				token_edit.text = yandex_token
+			
+			var auto_btn = main_panel.get_node_or_null("VBoxContainer/AutoButton") as CheckButton
+			if auto_btn:
+				auto_btn.button_pressed = auto_work
 
 # Методы для выполнения команд от AI
 func execute_command(command: String, parameters: Dictionary = {}) -> void:
