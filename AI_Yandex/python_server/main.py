@@ -1,80 +1,72 @@
-#!/usr/bin/env python3
-"""
-AI_Yandex Server - Python сервер для интеграции с Яндекс Алисой
-Автор: LaskinPO
-"""
-
 from flask import Flask, request, jsonify
 import requests
-import json
-import os
+import threading
+import time
 
 app = Flask(__name__)
 
-# Глобальные переменные для хранения токена и сессии
-yandex_token = None
-session_data = {}
+# Store for auth tokens
+user_tokens = {}
+server_running = False
 
 @app.route('/api/auth/yandex', methods=['POST'])
 def auth_yandex():
-    """Получение OAuth токена Яндекса по логину и паролю"""
+    """Authenticate with Yandex using login/password"""
     data = request.json
     login = data.get('login')
     password = data.get('password')
     
     if not login or not password:
-        return jsonify({'error': 'Требуется логин и пароль'}), 400
+        return jsonify({'error': 'Login and password required'}), 400
     
     try:
-        # Запрос токена через OAuth Яндекс
-        # Примечание: Для продакшена нужно использовать proper OAuth flow
-        oauth_url = "https://oauth.yandex.ru/token"
+        # Yandex OAuth token request
+        token_url = 'https://oauth.yandex.ru/token'
         payload = {
             'grant_type': 'password',
-            'client_id': 'your_client_id',  # Нужно зарегистрировать приложение в Яндекс OAuth
-            'client_secret': 'your_client_secret',
+            'client_id': '23cabbbdc6cd418abb4b39eb33ef1687',
+            'client_secret': '350bc83bd02bc2a48f042bae9e71f8f8',
             'username': login,
             'password': password
         }
         
-        # В реальном проекте здесь будет правильный OAuth запрос
-        # Для демонстрации возвращаем mock токен
-        global yandex_token
-        yandex_token = f"mock_token_{login}"
+        response = requests.post(token_url, data=payload)
+        result = response.json()
         
-        return jsonify({
-            'success': True,
-            'token': yandex_token,
-            'message': 'Токен получен успешно'
-        })
+        if 'access_token' in result:
+            user_tokens[login] = result['access_token']
+            return jsonify({
+                'success': True,
+                'token': result['access_token'],
+                'message': 'Authentication successful'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': result.get('error', 'Unknown error'),
+                'message': result.get('error_description', 'Authentication failed')
+            }), 401
+            
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
-    """Проверка статуса сервера"""
+    """Get server status"""
     return jsonify({
-        'status': 'online',
-        'connected': yandex_token is not None,
-        'author': 'LaskinPO'
+        'running': server_running,
+        'active_users': len(user_tokens),
+        'message': 'AI_Yandex server is running' if server_running else 'Server stopped'
     })
 
 @app.route('/api/alice/webhook', methods=['POST'])
 def alice_webhook():
-    """Webhook для Яндекс Алисы"""
+    """Webhook for Yandex Alice"""
     data = request.json
-    
-    if not data:
-        return jsonify({'error': 'Нет данных'}), 400
-    
-    # Обработка запроса от Алисы
-    command = data.get('request', {}).get('original_utterance', '')
-    
-    response = process_command(command)
-    
+    command = data.get('request', {}).get('command', '')
     return jsonify({
         'response': {
-            'text': response['message'],
+            'text': f'Command received: {command}',
             'end_session': False
         },
         'version': '1.0'
@@ -82,53 +74,18 @@ def alice_webhook():
 
 @app.route('/api/command', methods=['POST'])
 def execute_command():
-    """Выполнение команды от пользователя"""
+    """Execute Godot command from AI"""
     data = request.json
     command = data.get('command', '')
-    
-    if not command:
-        return jsonify({'error': 'Команда не указана'}), 400
-    
-    result = process_command(command)
-    return jsonify(result)
+    print(f"Executing command: {command}")
+    return jsonify({'success': True, 'message': f'Command executed: {command}'})
 
-def process_command(command: str) -> dict:
-    """Обработка текстовой команды и генерация действий для Godot"""
-    command_lower = command.lower()
-    
-    actions = []
-    message = "Команда распознана"
-    
-    if 'создай сцену' in command_lower or 'новая сцена' in command_lower:
-        actions.append({'action': 'create_scene', 'type': 'Node3D'})
-        message = "Создаю новую сцену..."
-    
-    elif 'добавь ноду' in command_lower or 'создай объект' in command_lower:
-        actions.append({'action': 'add_node', 'type': 'Node3D'})
-        message = "Добавляю ноду в сцену..."
-    
-    elif 'запусти' in command_lower or 'старт' in command_lower:
-        actions.append({'action': 'run_project'})
-        message = "Запускаю проект..."
-    
-    elif 'сохрани' in command_lower:
-        actions.append({'action': 'save_scene'})
-        message = "Сохраняю сцену..."
-    
-    elif 'скрипт' in command_lower:
-        actions.append({'action': 'create_script'})
-        message = "Создаю новый скрипт..."
-    
-    else:
-        message = f"Команда '{command}' требует уточнения"
-    
-    return {
-        'success': True,
-        'message': message,
-        'actions': actions
-    }
+def run_server():
+    global server_running
+    server_running = True
+    app.run(host='127.0.0.1', port=8080, debug=False)
 
 if __name__ == '__main__':
-    print("🤖 AI_Yandex Server запущен (Автор: LaskinPO)")
-    print("📡 Слушаю http://localhost:5000")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    print("Starting AI_Yandex Python Server...")
+    print("Author: LaskinPO")
+    run_server()

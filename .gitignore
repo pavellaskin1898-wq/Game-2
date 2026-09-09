@@ -4,41 +4,30 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Environment
-.env
-.env.local
-*.env.*
-
-# Logs
-*.log
-
-# Dependencies
+.Python
+env/
 venv/
 .venv/
-node_modules/
-
-# Build artifacts
-dist/
-build/
-target/
-
-# Editors
-.vscode/
-.idea/
-
-# OS
+.ENV
+.python-version
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+*.tmp
+*.swp
+*.swo
 .DS_Store
 Thumbs.db
 
-# Coverage
-.coverage
-coverage/
-htmlcov/
-
-# MyPy
-.mypy_cache/
-
-# Pytest
-.pytest_cache/
+# Godot
+.godot/
+*.import
+export_presets.cfg
 ```

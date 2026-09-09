@@ -1,0 +1,67 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8y9x7z6w5v4u"]
+
+[ext_resource type="Script" path="res://addons/AI_Yandex/dock_ui.gd" id="1_script"]
+
+[node name="AI_Yandex_Dock" type="VBoxContainer"]
+custom_minimum_size = Vector2(250, 400)
+size_flags_horizontal = 4
+script = ExtResource("1_script")
+
+[node name="TitleLabel" type="Label" parent="."]
+text = "AI_Yandex"
+horizontal_alignment = 1
+label_settings = {
+"font_size": 16,
+"font_color": Color(0.2, 0.6, 1, 1)
+}
+
+[node name="AuthorLabel" type="Label" parent="."]
+text = "Author: LaskinPO"
+horizontal_alignment = 1
+label_settings = {
+"font_size": 10,
+"font_color": Color(0.6, 0.6, 0.6, 1)
+}
+
+[node name="HSeparator1" type="HSeparator" parent="."]
+
+[node name="LoginLabel" type="Label" parent="."]
+text = "Yandex Login:"
+
+[node name="LoginInput" type="LineEdit" parent="."]
+placeholder_text = "Enter Yandex login"
+secret = false
+
+[node name="PasswordLabel" type="Label" parent="."]
+text = "Yandex Password:"
+
+[node name="PasswordInput" type="LineEdit" parent="."]
+placeholder_text = "Enter Yandex password"
+secret = true
+
+[node name="HSeparator2" type="HSeparator" parent="."]
+
+[node name="GetTokenBtn" type="Button" parent="."]
+text = "🔑 Get Token"
+
+[node name="ConnectBtn" type="Button" parent="."]
+text = "📡 Connect to Server"
+
+[node name="AutoWorkCheck" type="CheckBox" parent="."]
+text = "🔄 Autonomous Mode"
+button_pressed = false
+
+[node name="HSeparator3" type="HSeparator" parent="."]
+
+[node name="StatusLabel" type="Label" parent="."]
+text = "Status: Disconnected"
+horizontal_alignment = 1
+label_settings = {
+"font_size": 11,
+"font_color": Color(1, 0.3, 0.3, 1)
+}
+
+[node name="LogOutput" type="TextEdit" parent="."]
+size_flags_vertical = 3
+editable = false
+placeholder_text = "Activity log..."
