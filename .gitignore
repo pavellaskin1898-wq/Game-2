@@ -1,0 +1,59 @@
+```
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git stamps
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+*.env.*
+
+# Godot
+.godot/
+*.import
+export_presets.cfg
+
+# Dependencies
+node_modules/
+julia-*/
+zig*/
+target/
+.gradle/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Coverage
+coverage/
+htmlcov/
+.coverage*
+
+# Distribution / packaging
+.dist/
+.build/
+*.tar.gz
+*.whl
+```
