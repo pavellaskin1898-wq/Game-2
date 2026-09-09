@@ -1,0 +1,16 @@
+{
+  "name": "anime-desktop-girl",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Аниме девушка на рабочем столе",
+  "devDependencies": {
+    "electron": "^41.7.1"
+  }
+}

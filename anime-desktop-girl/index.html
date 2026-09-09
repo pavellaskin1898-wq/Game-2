@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anime Desktop Girl</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      overflow: hidden;
+      background: transparent;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .container {
+      width: 400px;
+      height: 600px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .anime-girl {
+      width: 300px;
+      height: 500px;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      image-rendering: auto;
+    }
+
+    .anime-girl img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      -webkit-app-region: no-drag;
+    }
+
+    .status-bar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 15px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      -webkit-app-region: drag;
+    }
+
+    .status-text {
+      font-size: 14px;
+      color: #333;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .clock {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ff6b9d;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 5px;
+      -webkit-app-region: no-drag;
+    }
+
+    .control-btn {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+
+    .control-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .close-btn {
+      background: #ff5f57;
+      color: white;
+    }
+
+    .message-bubble {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 15px 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      font-size: 14px;
+      color: #333;
+      max-width: 250px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+      -webkit-app-region: no-drag;
+    }
+
+    .message-bubble.show {
+      opacity: 1;
+    }
+
+    .message-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 10px 10px 0;
+      border-style: solid;
+      border-color: white transparent transparent;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="status-bar">
+      <div class="status-text" id="statusText">Привет! Я твоя аниме-помощница ♡</div>
+      <div class="clock" id="clock">00:00</div>
+    </div>
+
+    <div class="message-bubble" id="messageBubble"></div>
+
+    <div class="controls">
+      <button class="control-btn close-btn" id="closeBtn">×</button>
+    </div>
+
+    <div class="anime-girl">
+      <img src="anime-girl.png" alt="Anime Girl" id="animeImage">
+    </div>
+  </div>
+
+  <script>
+    const clockElement = document.getElementById('clock');
+    const statusText = document.getElementById('statusText');
+    const messageBubble = document.getElementById('messageBubble');
+    const closeBtn = document.getElementById('closeBtn');
+    const animeImage = document.getElementById('animeImage');
+
+    // Обновление часов
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      clockElement.textContent = `${hours}:${minutes}`;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Случайные сообщения
+    const messages = [
+      'Работай усердно! 💪',
+      'Не забудь сделать перерыв! ☕',
+      'У тебя всё получится! ✨',
+      'Я горжусь тобой! 🌟',
+      'Время продуктивности! 📚',
+      'Ты молодец! 🎉',
+    ];
+
+    function showMessage() {
+      const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+      messageBubble.textContent = randomMessage;
+      messageBubble.classList.add('show');
+      
+      setTimeout(() => {
+        messageBubble.classList.remove('show');
+      }, 3000);
+    }
+
+    // Показывать сообщение каждые 10 секунд
+    setInterval(showMessage, 10000);
+
+    // Закрытие окна
+    closeBtn.addEventListener('click', () => {
+      const { ipcRenderer } = require('electron');
+      ipcRenderer.send('close-window');
+    });
+
+    // Изменение статуса в зависимости от времени суток
+    function updateStatusByTime() {
+      const hour = new Date().getHours();
+      if (hour >= 5 && hour < 12) {
+        statusText.textContent = 'Доброе утро! Хорошего дня! 🌅';
+      } else if (hour >= 12 && hour < 18) {
+        statusText.textContent = 'Добрый день! Продуктивной работы! 💼';
+      } else if (hour >= 18 && hour < 23) {
+        statusText.textContent = 'Добрый вечер! Отдыхай! 🌙';
+      } else {
+        statusText.textContent = 'Доброй ночи! Не засиживайся! 😴';
+      }
+    }
+
+    updateStatusByTime();
+    setInterval(updateStatusByTime, 60000);
+
+    // Если изображение не загрузилось, используем SVG
+    animeImage.onerror = function() {
+      this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjUwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSIxNTAiIGN5PSIxMDAiIHI9IjgwIiBmaWxsPSIjZmZkOWUxIi8+CiAgPGNpcmNsZSBjeD0iMTMwIiBjeT0iOTAiIHI9IjEwIiBmaWxsPSIjMzMzIi8+CiAgPGNpcmNsZSBjeD0iMTcwIiBjeT0iOTAiIHI9IjEwIiBmaWxsPSIjMzMzIi8+CiAgPHBhdGggZD0iTTEyMCAxMjAgUTE1MCAxNDAgMTgwIDEyMCIgc3Ryb2tlPSIjMzMzIiBzdHJva2Utd2lkdGg9IjMiIGZpbGw9Im5vbmUiLz4KICA8cmVjdCB4PSIxMDAiIHk9IjE4MCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNmZjk5Y2MiIHJ4PSIyMCIvPgogIDxyZWN0IHg9IjgwIiB5PSIzODAiIHdpZHRoPSI2MCIgaGVpZ2h0PSIxMjAiIGZpbGw9IiNmZjk5Y2MiIHJ4PSIxMCIvPgogIDxyZWN0IHg9IjE2MCIgeT0iMzgwIiB3aWR0aD0iNjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjZmY5OWNjIiByeD0iMTAiLz4KICA8cmVjdCB4PSIxMDAiIHk9IjM4MCIgd2lkdGg9IjEyMCIgaGVpZ2h0PSIxMjAiIGZpbGw9IiNmZjY2Y2MiIHJ4PSIxMCIvPgo8L3N2Zz4=';
+    };
+  </script>
+</body>
+</html>
