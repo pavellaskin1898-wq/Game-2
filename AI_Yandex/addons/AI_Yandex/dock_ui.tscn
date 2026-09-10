@@ -1,0 +1,51 @@
+[gd_scene load_steps=2 format=3 uid="uid://dockui12345"]
+
+[ext_resource type="Script" path="res://addons/AI_Yandex/dock_ui.gd" id="1_script"]
+
+[node name="AI_Yandex_Panel" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "🤖 AI Yandex (LaskinPO)"
+horizontal_alignment = 1
+
+[node name="LoginEdit" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Логин Яндекс"
+
+[node name="PassEdit" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Пароль Яндекс"
+secret = true
+
+[node name="GetTokenBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "🔑 Получить токен"
+
+[node name="ConnectBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "📡 Подключиться к серверу"
+
+[node name="AutoCheck" type="CheckBox" parent="VBoxContainer"]
+layout_mode = 2
+text = "🔄 Автономная работа"
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Статус: Ожидание"
