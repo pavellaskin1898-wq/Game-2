@@ -1,0 +1,105 @@
+[gd_scene load_steps=6 format=3 uid="uid://main123"]
+
+[ext_resource type="Script" path="res://godot_scene/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://godot_scene/door.gd" id="2_door"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(20, 1, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall"]
+size = Vector3(20, 5, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_door"]
+radius = 0.5
+
+[node name="Main" type="Node3D"]
+
+[node name="Floor" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = null
+
+[node name="Wall" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -10)
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall"]
+shape = SubResource("BoxShape3D_wall")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Wall"]
+mesh = null
+
+[node name="Door1" type="Area3D" groups=["doors"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, -5)
+script = ExtResource("2_door")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Door1"]
+shape = SubResource("SphereShape3D_door")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Door1"]
+mesh = null
+
+[node name="InteractionPoint" type="Marker3D" parent="Door1"]
+
+[node name="Door2" type="Area3D" groups=["doors"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -5)
+script = ExtResource("2_door")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Door2"]
+shape = SubResource("SphereShape3D_door")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Door2"]
+mesh = null
+
+[node name="InteractionPoint" type="Marker3D" parent="Door2"]
+
+[node name="Door3" type="Area3D" groups=["doors"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, -5)
+script = ExtResource("2_door")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Door3"]
+shape = SubResource("SphereShape3D_door")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Door3"]
+mesh = null
+
+[node name="InteractionPoint" type="Marker3D" parent="Door3"]
+
+[node name="Player" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("CapsuleShape3D_player")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
+mesh = null
+
+[node name="Camera3D" type="Camera3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+current = true
+fov = 75.0
+
+[node name="InteractionArea" type="Area3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/InteractionArea"]
+shape = SubResource("SphereShape3D_door")
+
+[connection signal="body_entered" from="Player/InteractionArea" to="Player" method="_on_interaction_area_body_entered"]
+[connection signal="body_exited" from="Player/InteractionArea" to="Player" method="_on_interaction_area_body_exited"]
