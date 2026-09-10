@@ -1,67 +1,103 @@
-[gd_scene load_steps=2 format=3 uid="uid://c8y9x7z6w5v4u"]
+[gd_scene load_steps=2 format=3 uid="uid://dock_ui_ai_yandex"]
 
-[ext_resource type="Script" path="res://addons/AI_Yandex/dock_ui.gd" id="1_script"]
+[ext_resource type="Script" path="res://addons/AI_Yandex/dock_ui.gd" id="1_dock_ui"]
 
-[node name="AI_Yandex_Dock" type="VBoxContainer"]
-custom_minimum_size = Vector2(250, 400)
-size_flags_horizontal = 4
-script = ExtResource("1_script")
+[node name="AI_Yandex_Dock" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dock_ui")
 
-[node name="TitleLabel" type="Label" parent="."]
-text = "AI_Yandex"
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "AI_Yandex by LaskinPO"
 horizontal_alignment = 1
-label_settings = {
-"font_size": 16,
-"font_color": Color(0.2, 0.6, 1, 1)
-}
+vertical_alignment = 1
 
-[node name="AuthorLabel" type="Label" parent="."]
-text = "Author: LaskinPO"
-horizontal_alignment = 1
-label_settings = {
-"font_size": 10,
-"font_color": Color(0.6, 0.6, 0.6, 1)
-}
+[node name="HSeparator1" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
 
-[node name="HSeparator1" type="HSeparator" parent="."]
-
-[node name="LoginLabel" type="Label" parent="."]
+[node name="LoginLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
 text = "Yandex Login:"
 
-[node name="LoginInput" type="LineEdit" parent="."]
-placeholder_text = "Enter Yandex login"
-secret = false
+[node name="LoginInput" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Enter your Yandex login"
 
-[node name="PasswordLabel" type="Label" parent="."]
+[node name="PasswordLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
 text = "Yandex Password:"
 
-[node name="PasswordInput" type="LineEdit" parent="."]
-placeholder_text = "Enter Yandex password"
+[node name="PasswordInput" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Enter your Yandex password"
 secret = true
 
-[node name="HSeparator2" type="HSeparator" parent="."]
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
 
-[node name="GetTokenBtn" type="Button" parent="."]
-text = "🔑 Get Token"
+[node name="HostLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Server Host:"
 
-[node name="ConnectBtn" type="Button" parent="."]
+[node name="HostInput" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+placeholder_text = "http://localhost"
+
+[node name="PortLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Server Port:"
+
+[node name="PortInput" type="SpinBox" parent="VBoxContainer"]
+layout_mode = 2
+min_value = 1.0
+max_value = 65535.0
+value = 5000.0
+
+[node name="ConnectButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
 text = "📡 Connect to Server"
 
-[node name="AutoWorkCheck" type="CheckBox" parent="."]
-text = "🔄 Autonomous Mode"
-button_pressed = false
+[node name="AuthButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "🔑 Get Token"
 
-[node name="HSeparator3" type="HSeparator" parent="."]
+[node name="HSeparator3" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
 
-[node name="StatusLabel" type="Label" parent="."]
+[node name="StatusLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
 text = "Status: Disconnected"
 horizontal_alignment = 1
-label_settings = {
-"font_size": 11,
-"font_color": Color(1, 0.3, 0.3, 1)
-}
 
-[node name="LogOutput" type="TextEdit" parent="."]
-size_flags_vertical = 3
-editable = false
-placeholder_text = "Activity log..."
+[node name="HSeparator4" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="CommandLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Command:"
+
+[node name="CommandInput" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Enter command (e.g., Create new scene)"
+
+[node name="SendButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "🚀 Send Command"
+
+[node name="AutonomousCheck" type="CheckBox" parent="VBoxContainer"]
+layout_mode = 2
+text = "🔄 Autonomous Mode"

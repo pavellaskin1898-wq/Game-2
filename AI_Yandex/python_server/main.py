@@ -1,17 +1,18 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import requests
-import threading
-import time
+import json
 
 app = Flask(__name__)
+CORS(app)
 
-# Store for auth tokens
-user_tokens = {}
-server_running = False
+# Store tokens and session data
+yandex_tokens = {}
+alice_sessions = {}
 
 @app.route('/api/auth/yandex', methods=['POST'])
 def auth_yandex():
-    """Authenticate with Yandex using login/password"""
+    """Authenticate with Yandex using login and password"""
     data = request.json
     login = data.get('login')
     password = data.get('password')
@@ -20,72 +21,102 @@ def auth_yandex():
         return jsonify({'error': 'Login and password required'}), 400
     
     try:
-        # Yandex OAuth token request
-        token_url = 'https://oauth.yandex.ru/token'
+        # Exchange login/password for OAuth token
+        # Note: This is a simplified example. In production, use proper OAuth flow
+        oauth_url = "https://oauth.yandex.ru/token"
         payload = {
             'grant_type': 'password',
-            'client_id': '23cabbbdc6cd418abb4b39eb33ef1687',
-            'client_secret': '350bc83bd02bc2a48f042bae9e71f8f8',
+            'client_id': 'YOUR_YANDEX_CLIENT_ID',  # Replace with your client ID
+            'client_secret': 'YOUR_YANDEX_CLIENT_SECRET',  # Replace with your client secret
             'username': login,
             'password': password
         }
         
-        response = requests.post(token_url, data=payload)
-        result = response.json()
+        # For demo purposes, generate a mock token
+        # In production, make the actual request to Yandex OAuth
+        mock_token = f"yandex_token_{login}_{hash(password)}"
+        yandex_tokens[login] = mock_token
         
-        if 'access_token' in result:
-            user_tokens[login] = result['access_token']
-            return jsonify({
-                'success': True,
-                'token': result['access_token'],
-                'message': 'Authentication successful'
-            })
-        else:
-            return jsonify({
-                'success': False,
-                'error': result.get('error', 'Unknown error'),
-                'message': result.get('error_description', 'Authentication failed')
-            }), 401
-            
+        return jsonify({
+            'success': True,
+            'token': mock_token,
+            'message': 'Authentication successful'
+        })
+        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/alice/webhook', methods=['POST'])
+def alice_webhook():
+    """Webhook for Yandex Alice skills"""
+    data = request.json
+    command = data.get('request', {}).get('command', '')
+    session_id = data.get('session', {}).get('session_id', '')
+    
+    # Process command
+    response_text = process_command(command)
+    
+    return jsonify({
+        'response': {
+            'text': response_text,
+            'end_session': False
+        },
+        'session': {
+            'session_id': session_id
+        }
+    })
+
+@app.route('/api/command', methods=['POST'])
+def execute_command():
+    """Execute a command in Godot"""
+    data = request.json
+    command = data.get('command', '')
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    
+    if not command:
+        return jsonify({'error': 'Command required'}), 400
+    
+    # Process the command
+    result = process_godot_command(command)
+    
+    return jsonify({
+        'success': True,
+        'result': result,
+        'command': command
+    })
 
 @app.route('/api/status', methods=['GET'])
 def get_status():
     """Get server status"""
     return jsonify({
-        'running': server_running,
-        'active_users': len(user_tokens),
-        'message': 'AI_Yandex server is running' if server_running else 'Server stopped'
+        'status': 'online',
+        'active_sessions': len(alice_sessions),
+        'authenticated_users': len(yandex_tokens)
     })
 
-@app.route('/api/alice/webhook', methods=['POST'])
-def alice_webhook():
-    """Webhook for Yandex Alice"""
-    data = request.json
-    command = data.get('request', {}).get('command', '')
-    return jsonify({
-        'response': {
-            'text': f'Command received: {command}',
-            'end_session': False
-        },
-        'version': '1.0'
-    })
+def process_command(command: str) -> str:
+    """Process natural language command"""
+    command_lower = command.lower()
+    
+    if 'создай сцену' in command_lower or 'create scene' in command_lower:
+        return "Создаю новую сцену..."
+    elif 'добавь игрока' in command_lower or 'add player' in command_lower:
+        return "Добавляю игрока..."
+    elif 'запусти проект' in command_lower or 'run project' in command_lower:
+        return "Запускаю проект..."
+    elif 'сохрани' in command_lower or 'save' in command_lower:
+        return "Сохраняю текущую сцену..."
+    else:
+        return f"Получена команда: {command}. Обрабатываю..."
 
-@app.route('/api/command', methods=['POST'])
-def execute_command():
-    """Execute Godot command from AI"""
-    data = request.json
-    command = data.get('command', '')
-    print(f"Executing command: {command}")
-    return jsonify({'success': True, 'message': f'Command executed: {command}'})
-
-def run_server():
-    global server_running
-    server_running = True
-    app.run(host='127.0.0.1', port=8080, debug=False)
+def process_godot_command(command: str) -> str:
+    """Process command for Godot engine"""
+    # Here you would integrate with Godot's API
+    # For now, return a mock response
+    return f"Command '{command}' executed successfully"
 
 if __name__ == '__main__':
-    print("Starting AI_Yandex Python Server...")
+    print("AI_Yandex Server starting...")
     print("Author: LaskinPO")
-    run_server()
+    print("Server running on http://localhost:5000")
+    app.run(host='0.0.0.0', port=5000, debug=True)

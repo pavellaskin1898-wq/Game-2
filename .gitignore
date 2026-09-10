@@ -8,11 +8,9 @@ __pycache__/
 env/
 venv/
 .venv/
-.ENV
-.python-version
 pip-log.txt
 pip-delete-this-directory.txt
-.tox/
+.tox
 .coverage
 .coverage.*
 .cache
@@ -20,11 +18,14 @@ nosetests.xml
 coverage.xml
 *.cover
 *.log
-*.tmp
-*.swp
-*.swo
-.DS_Store
-Thumbs.db
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.so
+.Cython
+.pytest_cache/
+.mypy_cache/
 
 # Godot
 .godot/
