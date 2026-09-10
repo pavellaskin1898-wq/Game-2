@@ -1,0 +1,100 @@
+[gd_scene load_steps=2 format=3 uid="uid://dockui123456"]
+
+[ext_resource type="Script" path="res://addons/AI_Yandex/dock_ui.gd" id="1_script"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "AI_Yandex"
+horizontal_alignment = 1
+
+[node name="AuthorLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Author: LaskinPO"
+horizontal_alignment = 1
+
+[node name="HSeparator1" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="LoginLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Yandex Login:"
+
+[node name="LoginEdit" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Enter Yandex login"
+
+[node name="PasswordLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Yandex Password:"
+
+[node name="PasswordEdit" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Enter Yandex password"
+secret = true
+
+[node name="GetTokenBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "🔑 Get Token"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ServerLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Python Server URL:"
+
+[node name="ServerEdit" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+text = "http://127.0.0.1:5000"
+
+[node name="ConnectBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "📡 Connect to Server"
+
+[node name="StatusPanel" type="Panel" parent="VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 40)
+
+[node name="StatusLabel" type="Label" parent="StatusPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Status: Disconnected"
+horizontal_alignment = 1
+
+[node name="AutonomousCheck" type="CheckBox" parent="VBoxContainer"]
+layout_mode = 2
+text = "🔄 Autonomous Mode"
+button_pressed = false
+
+[node name="CommandEdit" type="TextEdit" parent="VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 60)
+placeholder_text = "Type command in Russian..."
+
+[node name="SendBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "▶ Send Command"
