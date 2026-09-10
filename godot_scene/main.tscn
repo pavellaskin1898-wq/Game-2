@@ -1,88 +1,105 @@
-[gd_scene load_steps=5 format=3 uid="uid://scene123"]
+[gd_scene load_steps=6 format=3 uid="uid://main123"]
 
-[ext_resource type="Script" path="res://godot_scene/player.gd" id="player_script"]
+[ext_resource type="Script" path="res://godot_scene/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://godot_scene/door.gd" id="2_door"]
 
-[sub_resource type="BoxShape3D" id="floor_shape"]
-shape_extents = Vector3(10, 0.5, 10)
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(20, 1, 20)
 
-[sub_resource type="BoxShape3D" id="wall_shape"]
-shape_extents = Vector3(10, 3, 0.5)
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall"]
+size = Vector3(20, 5, 1)
 
-[sub_resource type="BoxShape3D" id="door_shape"]
-shape_extents = Vector3(1.5, 3, 0.2)
-
-[sub_resource type="CapsuleShape3D" id="player_shape"]
-radius = 0.5
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
+radius = 0.4
 height = 1.8
 
-[node name="World" type="Node3D"]
+[sub_resource type="SphereShape3D" id="SphereShape3D_door"]
+radius = 0.5
 
-[node name="Floor" type="StaticBody3D" parent="."]
+[node name="Main" type="Node3D"]
+
+[node name="Floor" type="StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+collision_layer = 1
+collision_mask = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-shape = SubResource("floor_shape")
+shape = SubResource("BoxShape3D_floor")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = null
 
-[node name="Wall" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 10)
+[node name="Wall" type="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -10)
+collision_layer = 1
+collision_mask = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Wall"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-shape = SubResource("wall_shape")
+shape = SubResource("BoxShape3D_wall")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Wall"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = null
 
-[node name="Door1" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.5, 9.9)
+[node name="Door1" type="Area3D" groups=["doors"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1, -5)
+script = ExtResource("2_door")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Door1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-shape = SubResource("door_shape")
+shape = SubResource("SphereShape3D_door")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Door1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = null
 
-[node name="Door2" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 9.9)
+[node name="InteractionPoint" type="Marker3D" parent="Door1"]
+
+[node name="Door2" type="Area3D" groups=["doors"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -5)
+script = ExtResource("2_door")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Door2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-shape = SubResource("door_shape")
+shape = SubResource("SphereShape3D_door")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Door2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = null
 
-[node name="Door3" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.5, 9.9)
+[node name="InteractionPoint" type="Marker3D" parent="Door2"]
+
+[node name="Door3" type="Area3D" groups=["doors"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1, -5)
+script = ExtResource("2_door")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Door3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-shape = SubResource("door_shape")
+shape = SubResource("SphereShape3D_door")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Door3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = null
 
-[node name="Player" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
-script = ExtResource("player_script")
+[node name="InteractionPoint" type="Marker3D" parent="Door3"]
+
+[node name="Player" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_player")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-shape = SubResource("player_shape")
+shape = SubResource("CapsuleShape3D_player")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+mesh = null
 
 [node name="Camera3D" type="Camera3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 current = true
 fov = 75.0
 
-[node name="InteractionRayCast" type="RayCast3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
-target_position = Vector3(0, 0, -3)
+[node name="InteractionArea" type="Area3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/InteractionArea"]
+shape = SubResource("SphereShape3D_door")
+
+[connection signal="body_entered" from="Player/InteractionArea" to="Player" method="_on_interaction_area_body_entered"]
+[connection signal="body_exited" from="Player/InteractionArea" to="Player" method="_on_interaction_area_body_exited"]

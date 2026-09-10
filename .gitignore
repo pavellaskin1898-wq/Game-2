@@ -1,24 +1,7 @@
 ```
 # Godot-specific ignores
-.project
-.scn
-.gd
-.godot/
-
-# Editor/IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-*.tmp
-
-# System files
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Dependencies (if any Godot-specific dependency dirs appear)
-addons/
+*.import
+export_presets.cfg
+.autoload_singleton.gd
+.editor/
 ```
