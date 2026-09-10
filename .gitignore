@@ -1,4 +1,7 @@
 ```
+# Compressed files
+*.tar.gz
+
 # Python
 __pycache__/
 *.pyc
@@ -8,60 +11,32 @@ __pycache__/
 env/
 venv/
 .venv/
+.venv*/
+.ENV
+.env
+.env.local
+.env.*
+.venv.bak/
 pip-log.txt
-pip-delete-this-directory.txt
-.tox/
+pip-selfcheck.json
+.python-version
+.pytest_cache/
+.mypy_cache/
 .coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-*.tmp
-*.swp
-*~
-.DS_Store
-Thumbs.db
-
-# Godot
-*.import
-*.import*
-export_presets.cfg
-.Godot/
-
-# Virtual environments
-.venv/
-venv/
-env/
+htmlcov/
 
 # Dependencies
-node_modules/
-julia-*/
-zig*/
-
-# Build artifacts
-dist/
-build/
-target/
-*.o
-*.obj
-*.out
-*.exe
-*.dll
-*.so
-*.a
+requirements.txt.bak
 
 # Logs
 *.log
 
-# Coverage
-coverage/
-htmlcov/
-.coverage
-
-# Cache
-.mypy_cache/
-.pytest_cache/
-.gradle/
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 ```
